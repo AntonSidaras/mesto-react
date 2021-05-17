@@ -2,15 +2,18 @@ import profilePhoto from "../images/profile/Avatar.png"
 import React from 'react';
 
 function handleEditAvatarClick(){
-
+  const popup = document.querySelector(".popup_type_change-avatar");
+  popup.classList.add("popup_opened");
 }
 
 function handleEditProfileClick(){
-
+  const popup = document.querySelector(".popup_type_edit");
+  popup.classList.add("popup_opened");
 }
 
 function handleAddPlaceClick(){
-
+  const popup = document.querySelector(".popup_type_add");
+  popup.classList.add("popup_opened");
 }
 
 function Main() {

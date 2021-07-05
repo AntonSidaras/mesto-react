@@ -107,7 +107,8 @@ class Api {
 
 }
 
-export default new Api({server: "https://mesto.nomoreparties.co", token: "0551bbe7-cdc8-4608-8c2f-7d3f66eebc6e", cohort: "cohort-24", handleResponse: (res) => {
+//token: "0551bbe7-cdc8-4608-8c2f-7d3f66eebc6e", cohort: "cohort-24"
+export default new Api({server: "https://mesto.nomoreparties.co", token: "353f5b3a-f1c1-4e51-8411-778e0e42b67e", cohort: "cohort-22", handleResponse: (res) => {
   if (!res.ok) {
     return Promise.reject(`Ошибка: ${res.status}`);
   }

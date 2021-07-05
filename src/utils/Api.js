@@ -1,4 +1,4 @@
-export default class Api {
+class Api {
   constructor({server, token, cohort, handleResponse}) {
     this._server = server;
     this._token = token;
@@ -106,3 +106,10 @@ export default class Api {
   }
 
 }
+
+export default new Api({server: "https://mesto.nomoreparties.co", token: "0551bbe7-cdc8-4608-8c2f-7d3f66eebc6e", cohort: "cohort-24", handleResponse: (res) => {
+  if (!res.ok) {
+    return Promise.reject(`Ошибка: ${res.status}`);
+  }
+  return res.json();
+}});

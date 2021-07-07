@@ -8,6 +8,7 @@ function Main(props) {
   const [userName, setUserName] = React.useState("Жак-Ив Кусто");
   const [userDescription, setUserDescription] = React.useState("Исследователь Океана");
   const [userAvatar, setUserAvatar] = React.useState(profilePhoto);
+  const [userId, setUserId] = React.useState(0);
   const [cards, setCards] = React.useState([]);
 
   React.useEffect(() => {
@@ -17,6 +18,7 @@ function Main(props) {
       setUserName(result.name);
       setUserDescription(result.about);
       setUserAvatar(result.avatar);
+      setUserId(result._id);
     })
     .catch((error) => {
       console.log(error);
@@ -25,12 +27,13 @@ function Main(props) {
     Api.getInitialCards()
     .then((result) => {
       setCards(result);
+      console.log(result);
     })
     .catch((error) => {
       console.log(error);
     });
 
-  });
+  }, []);
 
   return (
     <main>
@@ -48,7 +51,7 @@ function Main(props) {
       </section>
       <section className="elements">
         {cards.map((item, i) => (
-          <Card key={i} card={item}/>
+          <Card key={i} card={item} userId={userId} onCardClick={props.onCardClick}/>
         ))}
       </section>
     </main>

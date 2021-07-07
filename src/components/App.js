@@ -10,6 +10,11 @@ function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
+  const [selectedCard, setSelectedCard] = React.useState(null);
+
+  function handleCardClick(card){
+    setSelectedCard(card);
+  }
 
   function handleEditAvatarClick(){
     setEditAvatarPopupOpen(true);
@@ -27,12 +32,13 @@ function App() {
     setEditProfilePopupOpen(false);
     setAddPlacePopupOpen(false);
     setEditAvatarPopupOpen(false);
+    setSelectedCard(null);
   }
 
   return (
     <div className="page__content">
       <Header/>
-      <Main onEditAvatar={handleEditAvatarClick} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick}/>
+      <Main onEditAvatar={handleEditAvatarClick} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick}/>
       <Footer/>
       <PopupWithForm onClose={closeAllPopups} isOpen={isEditProfilePopupOpen} name="edit" title="Редактировать профиль" buttonCaption="Сохранить">
         <input className="popup__input popup__input_first" id="name-input" type="text" name="name" defaultValue="" placeholder="Имя" minLength="2" maxLength="40" required/>
@@ -51,7 +57,7 @@ function App() {
         <span className="popup__input-error avatar-input-error"></span>
       </PopupWithForm>
       <PopupWithForm name="delete-confirm" title="Вы уверены?" buttonCaption="Да"/>
-      <ImagePopup/>
+      <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
     </div>
   );
 }

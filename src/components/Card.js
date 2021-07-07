@@ -1,36 +1,72 @@
 import React from 'react';
+import Api from "../utils/Api";
 
 function Card(props){
 
   const [likes, setLike] = React.useState(props.card.likes.length);
+  const [isLiked, setIsLiked] = React.useState(props.card.likes.some((like) => like._id === props.userId));
+  const isMy = props.card.owner._id === props.userId;
 
-  function handleLikeCard(){
-    setLike();
+  function handleClick(){
+    props.onCardClick(props.card);
   }
 
-  function handleDislikeCard(){
-    setLike();
+  function toggleLikeCard(){
+    if(isLiked){
+      Api.dislikeCard(props.card._id)
+      .then((result) => {
+        setIsLiked(false);
+        setLike(result.likes.length);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+    }
+    else{
+      Api.likeCard(props.card._id)
+      .then((result) => {
+        setIsLiked(true);
+        setLike(result.likes.length);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+    }
+  }
+
+  function removeCard(){
+    Api.removeCard(props.card._id)
+    .then(() => {
+      //places.removeItem(cardToRemove);
+      //popupWithConfirm.close();
+    })
+    .catch((error) => {
+      alert(error);
+    });
   }
 
   return(
-    <div id={props.card.id} className="elements__element">
-      <button className="elements__image-container" type="button">
+    <div id={props.card._id} className="elements__element">
+      <button className="elements__image-container" type="button" onClick={handleClick}>
         <img className="elements__image" src={props.card.link} alt={props.card.name}/>
       </button>
       <div className="elements__name-and-like">
         <h2 className="elements__title">{props.card.name}</h2>
         <div className="elements__like-container">
-          <button className="elements__like" type="button"></button>
+          <button className={`elements__like ${isLiked ? "elements__like_active" : ""}`} type="button" onClick={toggleLikeCard}></button>
           <span className="elements__like-counter">{likes}</span>
         </div>
       </div>
-      <button className="elements__remove" type="button" disabled></button>
+      <button className={`elements__remove ${isMy ? "elemenst__remove_type_active" : ""}`} type="button" disabled={!isMy} onClick={removeCard}></button>
     </div>
   );
 }
 
 export default Card;
 
+//`elements__remove ${isMy ? "elemenst__remove_type_active" : ""}`
+
+//disabled={isMy}
 /*createCard({id, isMy=false, likes, userId}) {
     this._pictureElement = this._getPictureTemplate();
     this._pictureElement.setAttribute("id", id); //установка id элементов в вёрстку

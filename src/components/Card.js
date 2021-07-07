@@ -1,5 +1,5 @@
 import React from 'react';
-import Api from "../utils/Api";
+import api from "../utils/api";
 
 function Card(props){
 
@@ -13,7 +13,7 @@ function Card(props){
 
   function toggleLikeCard(){
     if(isLiked){
-      Api.dislikeCard(props.card._id)
+      api.dislikeCard(props.card._id)
       .then((result) => {
         setIsLiked(false);
         setLike(result.likes.length);
@@ -23,7 +23,7 @@ function Card(props){
       });
     }
     else{
-      Api.likeCard(props.card._id)
+      api.likeCard(props.card._id)
       .then((result) => {
         setIsLiked(true);
         setLike(result.likes.length);
@@ -35,10 +35,8 @@ function Card(props){
   }
 
   function removeCard(){
-    Api.removeCard(props.card._id)
+    api.removeCard(props.card._id)
     .then(() => {
-      //places.removeItem(cardToRemove);
-      //popupWithConfirm.close();
     })
     .catch((error) => {
       alert(error);

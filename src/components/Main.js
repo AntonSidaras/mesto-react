@@ -1,7 +1,7 @@
 import profilePhoto from "../images/profile/Avatar.png"
 import React from 'react';
 import Card from "./Card";
-import Api from "../utils/Api";
+import api from "../utils/api";
 
 function Main(props) {
 
@@ -13,7 +13,7 @@ function Main(props) {
 
   React.useEffect(() => {
 
-    Api.getUserInfo()
+    api.getUserInfo()
     .then((result) => {
       setUserName(result.name);
       setUserDescription(result.about);
@@ -21,16 +21,15 @@ function Main(props) {
       setUserId(result._id);
     })
     .catch((error) => {
-      console.log(error);
+     alert(error);
     });
 
-    Api.getInitialCards()
+    api.getInitialCards()
     .then((result) => {
       setCards(result);
-      console.log(result);
     })
     .catch((error) => {
-      console.log(error);
+      alert(error);
     });
 
   }, []);

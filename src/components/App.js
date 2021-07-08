@@ -3,7 +3,13 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Main from "./Main";
 import PopupWithForm from "./PopupWithForm";
+import EditProfilePopup from "./EditProfilePopup";
+import EditAvatarPopup from "./EditAvatarPopup";
+import AddPlacePopup from "./AddPlacePopup";
 import ImagePopup from "./ImagePopup";
+import api from "../utils/api";
+import loader from "../images/profile/Load.gif"
+import {CurrentUserContext} from '../contexts/CurrentUserContext';
 
 function App() {
 
@@ -11,6 +17,18 @@ function App() {
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState(null);
+  const [currentUser, setCurrentUser] = React.useState({name: "Идёт загрузка...", avatar: loader, about: "", _id: 0});
+
+  React.useEffect(() => {
+
+    api.getUserInfo()
+    .then((result) => {
+      setCurrentUser(result);
+    })
+    .catch((error) => {
+     alert(error);
+    });
+  }, []);
 
   function handleCardClick(card){
     setSelectedCard(card);
@@ -37,56 +55,19 @@ function App() {
 
   return (
     <div className="page__content">
-      <Header/>
-      <Main 
-        onEditAvatar={handleEditAvatarClick} onEditProfile={handleEditProfileClick} 
-        onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick}
-      />
-      <Footer/>
-      <PopupWithForm 
-        onClose={closeAllPopups} isOpen={isEditProfilePopupOpen} name="edit" 
-        title="Редактировать профиль" buttonCaption="Сохранить"
-      >
-        <input 
-          className="popup__input popup__input_first" id="name-input" 
-          type="text" name="name" defaultValue="" placeholder="Имя" 
-          minLength="2" maxLength="40" required
+      <CurrentUserContext.Provider value={currentUser}>
+        <Header/>
+        <Main 
+          onEditAvatar={handleEditAvatarClick} onEditProfile={handleEditProfileClick} 
+          onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick}
         />
-        <span className="popup__input-error name-input-error"></span>
-        <input 
-          className="popup__input popup__input_second" id="about-input" 
-          type="text" name="about" defaultValue="" placeholder="О себе" 
-          minLength="2" maxLength="200" required/>
-        <span className="popup__input-error about-input-error"></span>
-      </PopupWithForm>
-      <PopupWithForm 
-        onClose={closeAllPopups} isOpen={isAddPlacePopupOpen} name="add" 
-        title="Новое место" buttonCaption="Создать"
-      >
-        <input 
-          className="popup__input popup__input_first" id="title-input" 
-          type="text" name="title" defaultValue="" placeholder="Название" 
-          minLength="2" maxLength="30" required
-        />
-        <span className="popup__input-error title-input-error"></span>
-        <input 
-          className="popup__input popup__input_second" id="link-input" 
-          type="url" name="link" defaultValue="" placeholder="Ссылка на картинку" required
-        />
-        <span className="popup__input-error link-input-error"></span>
-      </PopupWithForm>
-      <PopupWithForm 
-        onClose={closeAllPopups} isOpen={isEditAvatarPopupOpen} 
-        name="change-avatar" title="Обновить аватар" buttonCaption="Сохранить"
-      >
-        <input 
-          className="popup__input popup__input_first" id="avatar-input" 
-          type="url" name="avatar" defaultValue="" placeholder="Ссылка на аватар" required
-        />
-        <span className="popup__input-error avatar-input-error"></span>
-      </PopupWithForm>
-      <PopupWithForm name="delete-confirm" title="Вы уверены?" buttonCaption="Да"/>
-      <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
+        <Footer/>
+        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} />
+        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} />
+        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} /> 
+        <PopupWithForm name="delete-confirm" title="Вы уверены?" buttonCaption="Да"/>
+        <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
+      </CurrentUserContext.Provider>
     </div>
   );
 }

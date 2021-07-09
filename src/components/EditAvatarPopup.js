@@ -2,7 +2,7 @@ import React from "react";
 import PopupWithForm from "./PopupWithForm";
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
 
-function EditAvatarPopup({isOpen, onClose, onUpdateAvatar}) {
+function EditAvatarPopup({isOpen, onClose, onUpdateAvatar, buttonCaption}) {
 
   const avatarRef = React.useRef();
   const [avatar, setAvatar] = React.useState("");
@@ -27,7 +27,7 @@ function EditAvatarPopup({isOpen, onClose, onUpdateAvatar}) {
   return (
     <PopupWithForm 
       onClose={onClose} onSubmit={handleSubmit} isOpen={isOpen} 
-      name="change-avatar" title="Обновить аватар" buttonCaption="Сохранить"
+      name="change-avatar" title="Обновить аватар" buttonCaption={buttonCaption.others}
       >
       <input 
        className="popup__input popup__input_first" id="avatar-input" 

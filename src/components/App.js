@@ -8,16 +8,20 @@ import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import ImagePopup from "./ImagePopup";
 import api from "../utils/api";
+import FormValidator from "../utils/utils"
 import loader from "../images/profile/Load.gif" 
 import cardLoader from "../images/profile/Card-load.gif"
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
 
 function App() {
 
+  const buttonCaptionDefault = {add: "Создать", others: "Сохранить"}
+
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState(null);
+  const [buttonCaption, setButtonCaption] = React.useState(buttonCaptionDefault);
   const [currentUser, setCurrentUser] = React.useState({name: "Идёт загрузка...", avatar: loader, about: "", _id: 0});
   const [cards, setCards] = React.useState([{createdAt: "", likes: [], link: cardLoader, name: "", owner: {}, _id: ""}]);
 
@@ -40,6 +44,7 @@ function App() {
       alert(error);
     });
 
+    enableImperativeValidation();
   }, []);
 
   function handleCardLike(card) {
@@ -99,6 +104,7 @@ function App() {
   }
 
   function handleUpdateUser({name, about}){
+    setButtonCaption({add: "Создать", others: "Сохранение..."});
     api.setUserInfo({
       newName: name, 
       newAbout: about
@@ -111,10 +117,12 @@ function App() {
     })
     .finally(()=>{
       closeAllPopups();
+      setButtonCaption(buttonCaptionDefault);
     });
   }
 
   function handleUpdateAvatar({avatar}){
+    setButtonCaption({add: "Создать", others: "Сохранение..."});
     api.updateAvatar(avatar)
     .then((result) => {
       setCurrentUser(result);
@@ -124,10 +132,12 @@ function App() {
     })
     .finally(()=>{
       closeAllPopups();
+      setButtonCaption(buttonCaptionDefault);
     });
   }
 
   function handleAddPlaceSubmit({title, link}){
+    setButtonCaption({add: "Сохранение...", others: "Сохранить"});
     api.createNewCard({
       newTitle: title,
       newLink: link
@@ -140,6 +150,23 @@ function App() {
     })
     .finally(() => {
       closeAllPopups();
+      setButtonCaption(buttonCaptionDefault);
+    });
+  }
+
+  function enableImperativeValidation(){
+    const popupFormsList = Array.from(document.querySelectorAll(".popup__form"));
+    popupFormsList.forEach((popupForm) => {
+      const validator = new FormValidator({
+        inputSelector: ".popup__input",
+        submitButtonSelector: ".popup__submit-button",
+        inactiveButtonClass: "popup__submit-button_inactive",
+        inputErrorClass: "popup__input_type_error",
+        errorClass: "popup__input-error_active",
+      },
+      popupForm
+    );
+      validator.enableValidation();
     });
   }
 
@@ -153,9 +180,9 @@ function App() {
           onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick}
         />
         <Footer/>
-        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/>
-        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit}/>
-        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/> 
+        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} buttonCaption={buttonCaption}/>
+        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} buttonCaption={buttonCaption}/>
+        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} buttonCaption={buttonCaption}/> 
         <PopupWithForm name="delete-confirm" title="Вы уверены?" buttonCaption="Да"/>
         <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
       </CurrentUserContext.Provider>

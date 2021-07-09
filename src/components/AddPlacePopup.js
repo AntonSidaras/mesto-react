@@ -13,6 +13,9 @@ function AddPlacePopup({isOpen, onClose, onAddPlace, buttonCaption}) {
       title: titleRef.current.value,
       link: linkRef.current.value
     });
+
+    titleRef.current.value = "";
+    linkRef.current.value = "";
   } 
 
   return (

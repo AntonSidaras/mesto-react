@@ -53,6 +53,35 @@ function App() {
     setSelectedCard(null);
   }
 
+  function handleUpdateUser({name, about}){
+    api.setUserInfo({
+      newName: name, 
+      newAbout: about
+    })
+    .then((result) => {
+      setCurrentUser(result);
+    })
+    .catch((error) => {
+      alert(error);
+    })
+    .finally(()=>{
+      closeAllPopups();
+    });
+  }
+
+  function handleUpdateAvatar({avatar}){
+    api.updateAvatar(avatar)
+    .then((result) => {
+      setCurrentUser(result);
+    })
+    .catch((error) => {
+      alert(error);
+    })
+    .finally(()=>{
+      closeAllPopups();
+    });
+  }
+
   return (
     <div className="page__content">
       <CurrentUserContext.Provider value={currentUser}>
@@ -62,9 +91,9 @@ function App() {
           onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick}
         />
         <Footer/>
-        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} />
+        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/>
         <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} />
-        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} /> 
+        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/> 
         <PopupWithForm name="delete-confirm" title="Вы уверены?" buttonCaption="Да"/>
         <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
       </CurrentUserContext.Provider>

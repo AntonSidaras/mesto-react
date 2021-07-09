@@ -41,5 +41,8 @@
 @import url(./blocks/popup/__figure/popup__figure.css);
 @import url(./blocks/popup/__figcaption/popup__figcaption.css);
 @import url(./blocks/popup/__image/popup__image.css);
+@import url(./blocks/loader/loader.css);
+@import url(./blocks/loader/_opened/loader_opened.css);
+@import url(./blocks/loader/__background/loader__background.css);
 @import url(./blocks/footer/footer.css);
 @import url(./blocks/footer/__text/footer__text.css);

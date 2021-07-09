@@ -2,28 +2,30 @@ import React from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Main from "./Main";
-import PopupWithForm from "./PopupWithForm";
+import DeleteConfirmPopup from "./DeleteConfirmPopup";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import ImagePopup from "./ImagePopup";
+import Loader from "./Loader";
 import api from "../utils/api";
 import FormValidator from "../utils/utils"
-import loader from "../images/profile/Load.gif" 
-import cardLoader from "../images/profile/Card-load.gif"
+import onLoadImage from "../images/profile/Card-load.gif"
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
 
 function App() {
 
-  const buttonCaptionDefault = {add: "Создать", others: "Сохранить"}
+  const buttonCaptionDefault = {add: "Создать", delete: "Да", others: "Сохранить"}
 
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
+  const [isLoaderVisible, setLoaderVisible] = React.useState(true);
   const [selectedCard, setSelectedCard] = React.useState(null);
+  const [cardToDelete, setCardToDelete] = React.useState(null);
   const [buttonCaption, setButtonCaption] = React.useState(buttonCaptionDefault);
-  const [currentUser, setCurrentUser] = React.useState({name: "Идёт загрузка...", avatar: loader, about: "", _id: 0});
-  const [cards, setCards] = React.useState([{createdAt: "", likes: [], link: cardLoader, name: "", owner: {}, _id: ""}]);
+  const [currentUser, setCurrentUser] = React.useState({name: "Идёт загрузка...", avatar: onLoadImage, about: "", _id: 0});
+  const [cards, setCards] = React.useState([]);
 
   React.useEffect(() => {
 
@@ -42,6 +44,9 @@ function App() {
     })
     .catch((error) => {
       alert(error);
+    })
+    .finally(()=>{
+      setLoaderVisible(false);
     });
 
     enableImperativeValidation();
@@ -70,14 +75,8 @@ function App() {
     }
   } 
 
-  function handleCardDelete(card) {
-    api.removeCard(card._id)
-    .then(() => {
-      setCards((state) => state.filter(c => c._id !== card._id));
-    })
-    .catch((error) => {
-      alert(error);
-    });
+  function handleCardDelete(card){
+    setCardToDelete(card);
   }
 
   function handleCardClick(card){
@@ -104,7 +103,7 @@ function App() {
   }
 
   function handleUpdateUser({name, about}){
-    setButtonCaption({add: "Создать", others: "Сохранение..."});
+    setButtonCaption({add: "Создать", delete: "Да", others: "Сохранение..."});
     api.setUserInfo({
       newName: name, 
       newAbout: about
@@ -122,7 +121,7 @@ function App() {
   }
 
   function handleUpdateAvatar({avatar}){
-    setButtonCaption({add: "Создать", others: "Сохранение..."});
+    setButtonCaption({add: "Создать", delete: "Да", others: "Сохранение..."});
     api.updateAvatar(avatar)
     .then((result) => {
       setCurrentUser(result);
@@ -137,7 +136,7 @@ function App() {
   }
 
   function handleAddPlaceSubmit({title, link}){
-    setButtonCaption({add: "Сохранение...", others: "Сохранить"});
+    setButtonCaption({add: "Сохранение...", delete: "Да", others: "Сохранить"});
     api.createNewCard({
       newTitle: title,
       newLink: link
@@ -149,6 +148,22 @@ function App() {
       alert(error);
     })
     .finally(() => {
+      closeAllPopups();
+      setButtonCaption(buttonCaptionDefault);
+    });
+  }
+
+  function handleDelete(card){
+    setButtonCaption({add: "Создать", delete: "Удаление...", others: "Сохранить"});
+    api.removeCard(card._id)
+    .then(() => {
+      setCards((state) => state.filter(c => c._id !== card._id));
+    })
+    .catch((error) => {
+      alert(error);
+    })
+    .finally(()=>{
+      setCardToDelete(null);
       closeAllPopups();
       setButtonCaption(buttonCaptionDefault);
     });
@@ -179,11 +194,12 @@ function App() {
           onEditAvatar={handleEditAvatarClick} onEditProfile={handleEditProfileClick} 
           onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick}
         />
+        <Loader isVisible={isLoaderVisible} image={onLoadImage}/>
         <Footer/>
         <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} buttonCaption={buttonCaption}/>
         <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} buttonCaption={buttonCaption}/>
         <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} buttonCaption={buttonCaption}/> 
-        <PopupWithForm name="delete-confirm" title="Вы уверены?" buttonCaption="Да"/>
+        <DeleteConfirmPopup card={cardToDelete} onClose={closeAllPopups} onDelete={handleDelete} buttonCaption={buttonCaption}/>
         <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
       </CurrentUserContext.Provider>
     </div>

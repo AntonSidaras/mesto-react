@@ -15,7 +15,6 @@ function AddPlacePopup({isOpen, onClose, onAddPlace, buttonCaption}) {
     });
   } 
 
-
   return (
     <PopupWithForm 
       onClose={onClose} onSubmit={handleSubmit} isOpen={isOpen} name="add" 

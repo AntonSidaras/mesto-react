@@ -100,6 +100,7 @@ function App() {
     setAddPlacePopupOpen(false);
     setEditAvatarPopupOpen(false);
     setSelectedCard(null);
+    setCardToDelete(null);
   }
 
   function handleUpdateUser({name, about}){
@@ -163,7 +164,6 @@ function App() {
       alert(error);
     })
     .finally(()=>{
-      setCardToDelete(null);
       closeAllPopups();
       setButtonCaption(buttonCaptionDefault);
     });

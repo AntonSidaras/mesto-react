@@ -40,7 +40,6 @@ function App() {
     api.getInitialCards()
     .then((result) => {
       setCards(result);
-      console.log(result);
     })
     .catch((error) => {
       alert(error);

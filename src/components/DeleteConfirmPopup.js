@@ -11,7 +11,7 @@ function DeleteConfirmPopup({card, onClose, onDelete, buttonCaption}){
 
   return (
     <PopupWithForm onClose={onClose} onSubmit={handleSubmit} isOpen={card ? true : false} 
-      name="delete-confirm" title="Вы уверены?" buttonCaption={buttonCaption.delete}
+      name="delete-confirm" title="Вы уверены?" buttonCaption={buttonCaption.delete} isValidInputs={true}
     />
   );
 }

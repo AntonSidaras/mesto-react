@@ -9,7 +9,7 @@ import AddPlacePopup from "./AddPlacePopup";
 import ImagePopup from "./ImagePopup";
 import Loader from "./Loader";
 import api from "../utils/api";
-import FormValidator from "../utils/utils"
+import ImperativeValidation from "../utils/utils"
 import onLoadImage from "../images/profile/Card-load.gif"
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
 
@@ -29,26 +29,19 @@ function App() {
 
   React.useEffect(() => {
 
-    api.getUserInfo()
-    .then((result) => {
-      setCurrentUser(result);
+    Promise.all([api.getUserInfo(), api.getInitialCards()])
+    .then(([userData, cards]) => {
+      setCurrentUser(userData);
+      setCards(cards);
     })
-    .catch((error) => {
-     alert(error);
-    });
-
-    api.getInitialCards()
-    .then((result) => {
-      setCards(result);
-    })
-    .catch((error) => {
-      alert(error);
+    .catch(([userDataError, cardsError]) => {
+      alert(userDataError);
+      alert(cardsError);
     })
     .finally(()=>{
       setLoaderVisible(false);
+      //ImperativeValidation(); старая императивная валидация
     });
-
-    enableImperativeValidation();
   }, []);
 
   function handleCardLike(card) {
@@ -110,12 +103,12 @@ function App() {
     })
     .then((result) => {
       setCurrentUser(result);
+      closeAllPopups();
     })
     .catch((error) => {
       alert(error);
     })
     .finally(()=>{
-      closeAllPopups();
       setButtonCaption(buttonCaptionDefault);
     });
   }
@@ -125,12 +118,12 @@ function App() {
     api.updateAvatar(avatar)
     .then((result) => {
       setCurrentUser(result);
+      closeAllPopups();
     })
     .catch((error) => {
       alert(error);
     })
     .finally(()=>{
-      closeAllPopups();
       setButtonCaption(buttonCaptionDefault);
     });
   }
@@ -143,12 +136,12 @@ function App() {
     })
     .then((result) => {
       setCards([result, ...cards]);
+      closeAllPopups();
     })
     .catch((error) => {
       alert(error);
     })
     .finally(() => {
-      closeAllPopups();
       setButtonCaption(buttonCaptionDefault);
     });
   }
@@ -158,29 +151,13 @@ function App() {
     api.removeCard(card._id)
     .then(() => {
       setCards((state) => state.filter(c => c._id !== card._id));
+      closeAllPopups();
     })
     .catch((error) => {
       alert(error);
     })
     .finally(()=>{
-      closeAllPopups();
       setButtonCaption(buttonCaptionDefault);
-    });
-  }
-
-  function enableImperativeValidation(){
-    const popupFormsList = Array.from(document.querySelectorAll(".popup__form"));
-    popupFormsList.forEach((popupForm) => {
-      const validator = new FormValidator({
-        inputSelector: ".popup__input",
-        submitButtonSelector: ".popup__submit-button",
-        inactiveButtonClass: "popup__submit-button_inactive",
-        inputErrorClass: "popup__input_type_error",
-        errorClass: "popup__input-error_active",
-      },
-      popupForm
-    );
-      validator.enableValidation();
     });
   }
 

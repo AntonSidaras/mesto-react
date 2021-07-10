@@ -4,17 +4,16 @@ import {CurrentUserContext} from '../contexts/CurrentUserContext';
 
 function EditAvatarPopup({isOpen, onClose, onUpdateAvatar, buttonCaption}) {
 
+  const [isAvatarValid, setIsAvatarValid] = React.useState(true);
+  const avatarErrorRef = React.useRef();
   const avatarRef = React.useRef();
-  const [avatar, setAvatar] = React.useState("");
   const currentUser = React.useContext(CurrentUserContext);
 
   React.useEffect(() => {
-    setAvatar(currentUser.avatar);
-  }, [currentUser]);
-
-  function handleChangeAvatar(){
-    setAvatar(avatarRef.current.value);
-  }
+    avatarRef.current.value = currentUser.avatar;
+    avatarErrorRef.current.innerText = "";
+    setIsAvatarValid(true);
+  }, [currentUser, isOpen]);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -22,19 +21,34 @@ function EditAvatarPopup({isOpen, onClose, onUpdateAvatar, buttonCaption}) {
     onUpdateAvatar({
       avatar: avatarRef.current.value
     });
-  } 
+  }
+
+  function checkAvatarInput(){
+    if(!avatarRef.current.validity.valid){
+      setIsAvatarValid(false);
+      avatarErrorRef.current.innerText = avatarRef.current.validationMessage;
+    }
+    else{
+      setIsAvatarValid(true);
+      avatarErrorRef.current.innerText = "";
+    }
+  }
 
   return (
     <PopupWithForm 
       onClose={onClose} onSubmit={handleSubmit} isOpen={isOpen} 
-      name="change-avatar" title="Обновить аватар" buttonCaption={buttonCaption.others}
+      name="change-avatar" title="Обновить аватар" buttonCaption={buttonCaption.others} 
+      isValidInputs={isAvatarValid}
       >
       <input 
-       className="popup__input popup__input_first" id="avatar-input" 
-        type="url" name="avatar" value={avatar} placeholder="Ссылка на аватар"
-        ref={avatarRef} onChange={handleChangeAvatar} required
+       className={`popup__input popup__input_first ${(!isAvatarValid) ? "popup__input_type_error" : ""}`} id="avatar-input" 
+        type="url" name="avatar" placeholder="Ссылка на аватар"
+        ref={avatarRef} onChange={checkAvatarInput} required
       />
-      <span className="popup__input-error avatar-input-error"></span>
+      <span 
+        className={`popup__input-error avatar-input-error ${!isAvatarValid ? "popup__input-error_active" : ""}`} 
+        ref={avatarErrorRef}>
+      </span>
     </PopupWithForm>
   );
 }

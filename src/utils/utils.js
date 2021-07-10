@@ -1,4 +1,4 @@
-export default class FormValidator {
+class FormValidator {
   constructor(
     {
       inputSelector, 
@@ -82,4 +82,20 @@ export default class FormValidator {
   enableValidation() {
     this._setEventListeners();
   }
+}
+
+export default function enableImperativeValidation(){
+  const popupFormsList = Array.from(document.querySelectorAll(".popup__form"));
+  popupFormsList.forEach((popupForm) => {
+    const validator = new FormValidator({
+      inputSelector: ".popup__input",
+      submitButtonSelector: ".popup__submit-button",
+      inactiveButtonClass: "popup__submit-button_inactive",
+      inputErrorClass: "popup__input_type_error",
+      errorClass: "popup__input-error_active",
+    },
+    popupForm
+  );
+    validator.enableValidation();
+  });
 }
